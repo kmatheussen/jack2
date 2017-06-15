@@ -952,7 +952,7 @@ def build_drivers(bld):
         create_driver_obj(
             bld,
             target = 'winmme',
-            source = winmme_src,
+            source = winmme_driver_src,
             use = ['WINMME'])
 
     if bld.env['IS_MACOSX']:
