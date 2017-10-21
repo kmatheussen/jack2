@@ -1,0 +1,61 @@
+MXEPATH ?= $(HOME)/mxe
+
+DEBUG=
+#DEBUG=--debug
+
+
+ARCH32=i686-w64-mingw32.shared
+ARCH64=x86_64-w64-mingw32.shared
+
+
+all: build/jackd.exe 32build/build/common/libjack-0.dll
+	rm -fr install
+	mkdir install
+
+	cp build/jackd.exe install/
+	cp build/common/libjackserver-0.dll install/
+	cp build/common/libjack-0.dll install/libjack64.dll
+
+	mkdir install/jack
+	cp build/jack_portaudio.dll install/jack/
+	cp build/jack_dummy.dll install/jack/
+
+	cp $(MXEPATH)/usr/$(ARCH64)/bin/libgcc_s_seh-1.dll install/
+	cp $(MXEPATH)/usr/$(ARCH64)/bin/libstdc++-6.dll install/
+	cp $(MXEPATH)/usr/$(ARCH64)/bin/libgnurx-0.dll install/
+	cp $(MXEPATH)/usr/$(ARCH64)/bin/libportaudio-2.dll install/
+
+	mkdir install/win32libs
+	cp 32build/build/common/libjack-0.dll install/win32libs/libjack.dll
+	cp $(MXEPATH)/usr/$(ARCH32)/bin/libstdc++-6.dll install/win32libs/
+	cp $(MXEPATH)/usr/$(ARCH32)/bin/libgcc_s_sjlj-1.dll install/win32libs/
+	cp $(MXEPATH)/usr/$(ARCH32)/bin/libgnurx-0.dll install/win32libs/
+
+clean:
+	rm -fr 32build
+	rm -fr build
+	xterm -e '(./waf clean ; 1)'
+
+32build/build/common/libjack-0.dll:
+	rm -fr 32build
+	mkdir /tmp/32build
+	cp -a * /tmp/32build/
+	rm -fr /tmp/32build/build
+	mv /tmp/32build .
+	cd 32build && make -f Makefile.mingw.jack_local configure32 && make -f Makefile.mingw.jack_local build32
+
+build/jackd.exe:
+	make -f Makefile.mingw.jack_local configure64 && make -f Makefile.mingw.jack_local build64
+
+build64:
+	PKGCONFIG=$(ARCH64)-pkg-config CC=$(ARCH64)-gcc CXX=$(ARCH64)-g++ ./waf build -v -j4
+
+build32:
+	PKGCONFIG=$(ARCH32)-pkg-config CC=$(ARCH32)-gcc CXX=$(ARCH32)-g++ ./waf build -v -j4
+
+configure64:
+	PKGCONFIG=$(ARCH64)-pkg-config CC=$(ARCH64)-gcc CXX=$(ARCH64)-g++ ./waf configure --platform=win32 $(DEBUG)
+
+configure32:
+	PKGCONFIG=$(ARCH32)-pkg-config CC=$(ARCH32)-gcc CXX=$(ARCH32)-g++ ./waf configure --platform=win32 $(DEBUG)
+
