@@ -30,6 +30,8 @@
     #define ADDON_DIR "jack"
 #endif
 
+#define ADDON_DIRW L"jack"
+
 namespace Jack
 {
     struct JackRequest;
