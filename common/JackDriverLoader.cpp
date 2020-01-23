@@ -46,9 +46,9 @@ static wchar_t* locate_dll_driver_dir()
         wchar_t *p = wcsrchr(driver_dir_storage, L'\\');
         if (p && (p != driver_dir_storage)) {
             *p = 0;
-        }
-        jack_info("Drivers/internals found in : Ss", driver_dir_storage);
-        wcscat(driver_dir_storage, L"/");
+        }   
+        jack_info("Drivers/internals found in : %S", driver_dir_storage);
+        wcscat(driver_dir_storage, L"\\");
         wcscat(driver_dir_storage, ADDON_DIRW);
         return wcsdup(driver_dir_storage);
     } else {
@@ -421,7 +421,7 @@ static void* check_symbol(const wchar_t* sofile, const char* symbol, const wchar
 
     if ((dlhandle = LoadDriverModule(filename)) == NULL) {
 #ifdef WIN32
-        jack_error ("Could not open component .dll '%s': %ld", filename, GetLastError());
+        jack_error ("Could not open component .dll '%S': %ld", filename, GetLastError());
 #else
         jack_error ("Could not open component .so '%s': %s", filename, dlerror());
 #endif
@@ -521,13 +521,13 @@ JSList * jack_drivers_load(JSList * drivers)
         if (desc) {
             driver_list = jack_slist_append (driver_list, desc);
         } else {
-            jack_error ("jack_get_descriptor returns null for \'%s\'", filedata.cFileName);
+            jack_error ("jack_get_descriptor returns null for \'%S\'", filedata.cFileName);
         }
 
     } while (FindNextFileW(file, &filedata));
 
     if (!driver_list) {
-        jack_error ("Could not find any drivers in %s!", driver_dir);
+        jack_error ("Could not find any drivers in %S!", driver_dir);
     }
 
 error:
@@ -745,18 +745,26 @@ Jack::JackDriverClientInterface* JackDriverInfo::Open(jack_driver_desc_t* driver
     if (fHandle == NULL) {
 #ifdef WIN32
         if ((errstr = GetLastError ()) != 0) {
-            jack_error ("Can't load \"%s\": %ld", driver_desc->file, errstr);
+            jack_error ("Can't load \"%S\": %ld", driver_desc->file, errstr);
 #else
         if ((errstr = dlerror ()) != 0) {
             jack_error ("Can't load \"%s\": %s", driver_desc->file, errstr);
 #endif
 
         } else {
-            jack_error ("Error loading driver shared object %s", driver_desc->file);
+#ifdef WIN32
+          jack_error ("Error loading driver shared object %s", driver_desc->file);
+#else
+          jack_error ("Error loading driver shared object %S", driver_desc->file);
+#endif
         }
         return NULL;
     }
 
+
+    //jack_error (" ---------------------------------  Successfully opened driver \"%S\"\n", driver_desc->file);
+
+        
     fInitialize = (driverInitialize)GetDriverProc(fHandle, "driver_initialize");
 
 #ifdef WIN32
@@ -764,7 +772,12 @@ Jack::JackDriverClientInterface* JackDriverInfo::Open(jack_driver_desc_t* driver
 #else
     if ((fInitialize == NULL) && (errstr = dlerror ()) != 0) {
 #endif
+
+#ifdef WIN32
+        jack_error("No initialize function in shared object %S\n", driver_desc->file);
+#else
         jack_error("No initialize function in shared object %s\n", driver_desc->file);
+#endif
         return NULL;
     }
 
