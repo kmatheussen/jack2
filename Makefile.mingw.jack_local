@@ -27,12 +27,16 @@ all: build/jackd.exe 32build/build/common/libjack-0.dll
 	cp $(MXEPATH)/usr/$(ARCH64)/bin/libstdc++-6.dll install/
 	cp $(MXEPATH)/usr/$(ARCH64)/bin/libgnurx-0.dll install/
 	cp $(MXEPATH)/usr/$(ARCH64)/bin/libportaudio-2.dll install/
+	cp $(MXEPATH)/usr/$(ARCH64)/bin/libwinpthread-1.dll install/
 
 	mkdir install/win32libs
 	cp 32build/build/common/libjack-0.dll install/win32libs/libjack.dll
+
 	cp $(MXEPATH)/usr/$(ARCH32)/bin/libstdc++-6.dll install/win32libs/
 	cp $(MXEPATH)/usr/$(ARCH32)/bin/libgcc_s_sjlj-1.dll install/win32libs/
 	cp $(MXEPATH)/usr/$(ARCH32)/bin/libgnurx-0.dll install/win32libs/
+	cp $(MXEPATH)/usr/$(ARCH32)/bin/libportaudio-2.dll install/win32libs/
+	cp $(MXEPATH)/usr/$(ARCH32)/bin/libwinpthread-1.dll install/win32libs/
 
 clean:
 	rm -fr 32build
