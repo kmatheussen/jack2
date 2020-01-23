@@ -1,3 +1,6 @@
+# MXE: to get portaudio with asio, manually add "asio" to "--with-winapi" and the line "--with-asiodir=$(HOME)/SDKs/asiosdk2.3_$(TARGET) \" to src/portaudio.mk.
+
+
 MXEPATH ?= $(HOME)/mxe
 
 DEBUG=
@@ -54,8 +57,8 @@ build32:
 	PKGCONFIG=$(ARCH32)-pkg-config CC=$(ARCH32)-gcc CXX=$(ARCH32)-g++ ./waf build -v -j4
 
 configure64:
-	PKGCONFIG=$(ARCH64)-pkg-config CC=$(ARCH64)-gcc CXX=$(ARCH64)-g++ ./waf configure --platform=win32 $(DEBUG)
+	PKGCONFIG=$(ARCH64)-pkg-config CC=$(ARCH64)-gcc CXX=$(ARCH64)-g++ ./waf configure --platform=win32 $(DEBUG) --opus=no
 
 configure32:
-	PKGCONFIG=$(ARCH32)-pkg-config CC=$(ARCH32)-gcc CXX=$(ARCH32)-g++ ./waf configure --platform=win32 $(DEBUG)
+	PKGCONFIG=$(ARCH32)-pkg-config CC=$(ARCH32)-gcc CXX=$(ARCH32)-g++ ./waf configure --platform=win32 $(DEBUG) --opus=no
 
