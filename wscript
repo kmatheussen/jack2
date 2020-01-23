@@ -488,17 +488,19 @@ def configure(conf):
     configure_auto_options(conf)
 
     # Check for functions.
-    conf.check(
-        function_name='ppoll',
-        header_name=['poll.h', 'signal.h'],
-        defines=['_GNU_SOURCE'],
-        mandatory=False)
+    if not conf.env['IS_WINDOWS']:
+        conf.check(
+            function_name='ppoll',
+            header_name=['poll.h', 'signal.h'],
+            defines=['_GNU_SOURCE'],
+            mandatory=False)
 
     # Check for backtrace support
-    conf.check(
-        header_name='execinfo.h',
-        define_name='HAVE_EXECINFO_H',
-        mandatory=False)
+    if not conf.env['IS_WINDOWS']:
+        conf.check(
+            header_name='execinfo.h',
+            define_name='HAVE_EXECINFO_H',
+            mandatory=False)
 
     conf.recurse('common')
     if Options.options.dbus:
