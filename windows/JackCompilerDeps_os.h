@@ -65,49 +65,4 @@ inline int snprintf(char* buf, size_t buf_len, const char* fmt, ...)
 #endif
 #endif
 
-#if defined(__MINGW32__)
-
-// Simple implementations of setenv and unsetenv using _putenv.
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-static inline int setenv(const char *name, const char *value, int overwrite)
-{
-
-  if (overwrite==0 && getenv(name)!=NULL)
-    return 0;
-
-  int size = strlen(name)+strlen(value)+2;
-
-  char *command = (char*)malloc(size);
-
-  snprintf(command, size, "%s=%s", name, value);
-
-  int ret = _putenv(command);
-
-  free(command);
-
-  return ret;
-}
-
-static inline int unsetenv(const char *name)
-{
-
-  int size = strlen(name)+2;
-
-  char *command = (char*)malloc(size);
-
-  snprintf(command, size, "%s=", name);
-
-  int ret = _putenv(command);
-
-  free(command);
-
-  return ret;
-}
-
-#endif
-
 #endif
