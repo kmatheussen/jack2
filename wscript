@@ -874,7 +874,7 @@ def build_drivers(bld):
         'windows/portaudio/JackPortAudioDriver.cpp',
     ]
 
-    winmme_src = [
+    winmme_driver_src = [
         'windows/winmme/JackWinMMEDriver.cpp',
         'windows/winmme/JackWinMMEInputPort.cpp',
         'windows/winmme/JackWinMMEOutputPort.cpp',
